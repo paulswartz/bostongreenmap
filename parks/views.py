@@ -19,7 +19,7 @@ from parks.models import Neighborhood, Park, Facility, Activity, Event, Parktype
 logger = logging.getLogger(__name__)
 
 def get_topnav_data():
-    """ Returns lists of all Neighborhoods, Activities and 
+    """ Returns lists of all Neighborhoods, Activities and
         Parks serialized as JSON.
     """
     neighborhoods = Neighborhood.objects.all().only('name')
@@ -42,10 +42,11 @@ def get_parks(request):
             # embed all images
             images = []
             for i in p.images.all():
-                try: 
+                try:
                     tn = get_thumbnail(i.image, '250x250', crop='center', quality=80)
                     image = dict(
                         src=tn.url,
+                        original=i.image.url,
                         caption=strip_tags(i.caption),
                     )
                     images.append(image)
@@ -78,7 +79,7 @@ def get_facilities(request, park_id):
 
     try:
         park = Park.objects.get(pk=park_id)
-        facilities = Facility.objects.transform(4326).filter(park=park).select_related('facilitytype').prefetch_related('activity') 
+        facilities = Facility.objects.transform(4326).filter(park=park).select_related('facilitytype').prefetch_related('activity')
         features = []
         for f in facilities:
             activities = [ a.name for a in f.activity.all() ]
@@ -138,7 +139,7 @@ def parks_page(request, park_slug):
     map = encoder.encode(coordinates['coordinates'][0][0])
     stories = Story.objects.filter(park=park).order_by("-date")
     #stops = MBTAStop.objects.filter(lat_long__distance_lte=(park.geometry.centroid,D(mi=settings.MBTA_DISTANCE))) # this distance doesn't overload the page with a million stops.
-    
+
     neighborhoods, activities = get_topnav_data()
 
     if request.method == 'POST':
@@ -163,5 +164,3 @@ def parks_page(request, park_slug):
         },
         context_instance=RequestContext(request)
     )
-
-

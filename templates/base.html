@@ -17,7 +17,7 @@
     <!--[if lte IE 8]>
       <link rel="stylesheet" href="{{ STATIC_URL }}libs/leaflet/leaflet.ie.css" />
     <![endif]-->
-    
+
     <link rel="stylesheet" href="{{ STATIC_URL }}css/style.css">
 
     <!-- Fav and touch icons -->
@@ -28,23 +28,27 @@
     <link rel="shortcut icon" href="{{ STATIC_URL }}ico/favicon.png">
 
   </head>
-  
+
   <body>
 
     <div class="viewport">
       <div class="frame">
-        <div id="slider" class="slider nav-collapse collapse width">
+        <div id="slider" class="slider collapse width" >
           <div class="collapse-inner">
 
+            <button type="button" class="close pull-right" data-dismiss="modal" aria-hidden="true" data-toggle="collapse" data-target="#slider">
+              <i class="icon-remove-circle icon-2"></i>
+            </button>
+
             <div id="content"></div>
-          
+
           </div>
         </div>
 
         <div class="view">
           <div class="navbar">
             <div class="navbar-inner">
-              
+
               <a class="brand" href="/">Boston Green</a>
 
               <div class="navbar-search">
@@ -68,7 +72,7 @@
                     </select>
                   </li>
                   <li>
-                    <input type="text" class="search-query" name="parkname" id="parkname" placeholder="Type a Park Name">    
+                    <input type="text" class="search-query" name="parkname" id="parkname" placeholder="Type a Park Name">
                   </li>
                 </ul>
               </div>
@@ -87,31 +91,16 @@
     {% verbatim %}
     <script id="detail-template" type="text/x-handlebars-template">
 
-      <button type="button" class="close pull-right" data-dismiss="modal" aria-hidden="true" data-toggle="collapse" data-target="#slider"><i class="icon-remove-circle icon-2"></i></button>
+      <div class="background" {{#if preferredImage}}style="background-image: url({{ preferredImage.original }}); opacity: 1;"{{/if}} />
 
       <div class="park-detail">
-
         {{#if change_url}}
         <span class="change-link"><a href="{{change_url}}" target="_blank">Edit Park</a></span>
         {{/if}}
 
-        <h1>{{name}}</h1>
-
-        {{#if images}}
-        <div id="parkimages">
-
-        {{#each images}}
-          <div>
-            <img src="{{src}}" alt="{{caption}}"><br>
-            <span class="caption">{{caption}}</span>
-          </div>
-        {{/each}}
-        
-        
-          <a href="#" class="slidesjs-previous slidesjs-navigation"><i class="icon-chevron-left icon-2"></i></a>
-          <a href="#" class="slidesjs-next slidesjs-navigation"><i class="icon-chevron-right icon-2"></i></a>
+        <div>
+          <h1>{{name}}</h1>
         </div>
-        {{/if}}
 
         <div class="description">
           {{description}}
@@ -178,7 +167,7 @@
     <script type="text/javascript" src="{{ STATIC_URL }}libs/handlebars.js"></script>
     <script src="{{ STATIC_URL }}libs/jquery/jquery.url.js" type="text/javascript"></script>
     <script src="{{ STATIC_URL }}libs/jquery/jquery.slides.min.js" type="text/javascript"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}libs/bootstrap/js/bootstrap.js"></script> 
+    <script type="text/javascript" src="{{ STATIC_URL }}libs/bootstrap/js/bootstrap.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}parks/js/parks.js"></script>
 
 

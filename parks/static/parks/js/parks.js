@@ -181,12 +181,13 @@ $(function(){
 
     // facilities already on map?
     if($.inArray( parkId, mappedParkFacilities) !== -1 ) {
-      render_parkActivityList( parks[parkId].activities );
+      render_parkActivityList( parks[parkId]);
       return;
     }
     mappedParkFacilities.push( parkId );
 
     var url = "/parks/" + parkId + "/facilities/",
+        icons = [],
         activities = [];
 
     $.getJSON(url, function (data) {
@@ -206,6 +207,7 @@ $(function(){
           })
         },
         onEachFeature: function ( feature, layer ) {
+          icons.push(feature.properties.icon);
           $.merge(activities, feature.properties.activities);
 
           var html = facilityPopupTemplate( feature.properties ),
@@ -226,10 +228,16 @@ $(function(){
       $.each(activities, function(i, activity){
         if($.inArray( activity, uniqueActivities) === -1 ) uniqueActivities.push( activity );
       });
+      var uniqueIcons = [];
+      $.each(icons, function(i, icon){
+        if($.inArray( icon, uniqueIcons) === -1 ) uniqueIcons.push( icon );
+      });
+
 
       // update activity listing
       parks[parkId].activities = uniqueActivities.sort();
-      render_parkActivityList( parks[parkId].activities );
+      parks[parkId].icons = uniqueIcons.sort();
+      render_parkActivityList( parks[parkId] );
 
     });
   }
@@ -300,6 +308,9 @@ $(function(){
   // park detail slider
   function show_parkDetail( park ) {
     // content
+    if (park.images.length > 0) {
+      park.preferredImage = park.images[0];
+    }
     var html = parkDetailTemplate(park);
     $("#content").html( html );
 
@@ -307,7 +318,7 @@ $(function(){
     if ( park.images.length > 1 ) {
       $("#parkimages").slidesjs({
         width: 250,
-        height: 250,
+        height: 270,
         navigation: false,
         pagination: false
       });
@@ -328,11 +339,15 @@ $(function(){
   }
 
   // render activites list
-  function render_parkActivityList( activities ) {
-    var activitiesTemplateSource = $("#activities-template").html(),
-        activitiesTemplate = Handlebars.compile( activitiesTemplateSource ),
-        html = activitiesTemplate( { activities: activities } );
-    $("#content .park-detail #activities").append( html );
+  function render_parkActivityList( park ) {
+    if (park.activities) {
+      var activitiesTemplateSource = $("#activities-template").html(),
+          activitiesTemplate = Handlebars.compile( activitiesTemplateSource ),
+          html = activitiesTemplate(park);
+      $("#activities").append( html );
+    } else {
+      $("#activities").hide();
+    }
   }
 
 
